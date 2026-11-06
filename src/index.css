@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Base Reset & Typography ─── */
+:root {
+  --color-graphite-950: #0a0a0c;
+  --color-graphite-900: #111114;
+  --color-graphite-800: #18181c;
+  --color-graphite-700: #1e1e24;
+  --color-graphite-600: #26262e;
+  --color-electric: #3b82f6;
+  --color-cyan: #22d3ee;
+  --color-text: #e8e8ec;
+  --color-text-muted: #9898a4;
+  
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--color-graphite-950);
+  color: var(--color-text);
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* ─── Scrollbar Styling ─── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-graphite-900);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-graphite-600);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-graphite-500);
+}
+
+/* ─── Focus States ─── */
+:focus-visible {
+  outline: 2px solid var(--color-electric);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ─── Reduced Motion ─── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ─── Selection ─── */
+::selection {
+  background-color: rgba(59, 130, 246, 0.3);
+  color: #ffffff;
+}
+
+/* ─── Utility Classes ─── */
+.text-gradient {
+  background: linear-gradient(135deg, var(--color-electric) 0%, var(--color-cyan) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.border-subtle {
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.surface-elevated {
+  background-color: rgba(30, 30, 36, 0.6);
+  backdrop-filter: blur(8px);
+}
