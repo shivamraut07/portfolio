@@ -176,13 +176,7 @@ export const projects: ProjectSummary[] = [
     tags: ['TinyML', 'Edge Impulse', 'TFLite', 'Embedded'],
     status: 'in-progress',
   },
-  {
-    id: 'nidar',
-    title: 'NIDAR',
-    tagline: '[Project description placeholder � details to be verified]',
-    tags: ['Robotics', 'Autonomous Systems'],
-    status: 'exploration',
-  },
+
 ];
 
 export const personalInfo = {
