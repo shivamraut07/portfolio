@@ -1,0 +1,3 @@
+cd "c:\my project works\portfolio"
+npm run build
+npm run preview -- --host

@@ -11,24 +11,54 @@ export function useAudio() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    audioRef.current = new Audio();
-    audioRef.current.preload = 'none';
+    const audio = new Audio();
+    audio.preload = 'auto';
+    audioRef.current = audio;
+
+    const handleEnded = () => {
+      setIsPlaying(false);
+      setIsMuted(true);
+      audio.muted = true;
+      audio.currentTime = 0;
+    };
+
+    audio.addEventListener('ended', handleEnded);
 
     return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.src = '';
-      }
+      audio.removeEventListener('ended', handleEnded);
+      audio.pause();
+      audio.src = '';
+      audioRef.current = null;
     };
   }, []);
 
   const toggleMute = useCallback(() => {
-    setIsMuted((prev) => !prev);
+    const audio = audioRef.current;
     setHasInteracted(true);
-    if (audioRef.current) {
-      audioRef.current.muted = !audioRef.current.muted;
+
+    if (isMuted) {
+      setIsMuted(false);
+      if (!audio) return;
+
+      audio.pause();
+      audio.src = '/audio/intro.mpeg';
+      audio.currentTime = 0;
+      audio.muted = false;
+      audio
+        .play()
+        .then(() => setIsPlaying(true))
+        .catch(() => setIsPlaying(false));
+      return;
     }
-  }, []);
+
+    setIsMuted(true);
+    if (audio) {
+      audio.pause();
+      audio.currentTime = 0;
+      audio.muted = true;
+    }
+    setIsPlaying(false);
+  }, [isMuted]);
 
   const playChapterAudio = useCallback(
     (src?: string) => {

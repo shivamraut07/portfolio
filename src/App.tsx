@@ -1,22 +1,23 @@
+import { motion } from 'framer-motion';
+
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { NavBar } from './components/NavBar';
+import { NetworkBackground } from './components/NetworkBackground';
 import { AvatarStage } from './components/AvatarStage';
-import { ChapterNav } from './components/ChapterNav';
 import { MobileChapterNav } from './components/MobileChapterNav';
 import { useReducedMotion } from './hooks/useReducedMotion';
 import { useAudio } from './hooks/useAudio';
 import { chapters, projects, personalInfo } from './data/chapters';
 import { X } from 'lucide-react';
+import ProjectModal, { type ProjectModalData } from './components/ProjectModal';
 
-/**
- * Silicon Jack — Master Portfolio Application
- * Engineering portfolio for Shivam Raut
- */
 export default function App() {
   const [currentChapter, setCurrentChapter] = useState(0);
   const [isMoving, setIsMoving] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
   const [activeSection, setActiveSection] = useState('journey');
   const [activeModal, setActiveModal] = useState<string | null>(null);
+  const [activeProject, setActiveProject] = useState<ProjectModalData | null>(null);
   const transitionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { prefersReducedMotion, toggleMotion } = useReducedMotion();
@@ -24,9 +25,6 @@ export default function App() {
 
   const chapter = chapters[currentChapter];
 
-  /**
-   * Navigate to a chapter with smooth avatar gliding and audio trigger
-   */
   const goToChapter = useCallback(
     (index: number) => {
       if (index === currentChapter || index < 0 || index >= chapters.length) return;
@@ -35,7 +33,6 @@ export default function App() {
         clearTimeout(transitionTimeoutRef.current);
       }
 
-      // Mark avatar as moving to spin wheels and animate glide
       setIsMoving(true);
 
       const delay = prefersReducedMotion ? 40 : 350;
@@ -64,9 +61,6 @@ export default function App() {
     }
   }, [currentChapter, goToChapter]);
 
-  /**
-   * Top navigation routing
-   */
   const handleNavigate = useCallback(
     (id: string) => {
       setActiveSection(id);
@@ -74,22 +68,19 @@ export default function App() {
         setActiveModal(null);
         goToChapter(0);
       } else {
-        // Direct access modals for Projects, About, Resume, Contact
         setActiveModal(id);
       }
     },
     [goToChapter]
   );
 
-  /**
-   * Keyboard accessibility
-   */
+  const toggleTheme = useCallback(() => {
+    setIsDarkMode((prev) => !prev);
+  }, []);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (
-        e.target instanceof HTMLInputElement ||
-        e.target instanceof HTMLTextAreaElement
-      ) {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
         return;
       }
 
@@ -113,16 +104,8 @@ export default function App() {
           e.preventDefault();
           goToChapter(0);
           break;
-        case 'End':
-          e.preventDefault();
-          goToChapter(chapters.length - 1);
+        default:
           break;
-      }
-
-      // Numeric jump keys 0-7
-      const num = parseInt(e.key, 10);
-      if (!isNaN(num) && num >= 0 && num < chapters.length) {
-        goToChapter(num);
       }
     };
 
@@ -139,188 +122,184 @@ export default function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-graphite-950 text-gray-200 selection:bg-cyan-500/30 selection:text-white flex flex-col justify-between">
-      {/* Accessibility skip button */}
-      <a
-        href="#stage-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-16 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-cyan-500 focus:text-black focus:font-mono focus:text-xs focus:rounded shadow-lg"
-      >
-        Skip to main content
-      </a>
-
-      {/* Top Navigation */}
-      <NavBar
-        isMuted={isMuted}
-        onToggleMute={toggleMute}
-        reducedMotion={prefersReducedMotion}
-        onToggleMotion={toggleMotion}
-        activeSection={activeSection}
-        onNavigate={handleNavigate}
+    <>
+      <div className={isDarkMode ? 'dark' : ''}>
+      <motion.div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 -z-50 overflow-hidden bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.8)_0%,_transparent_60%)] dark:bg-[radial-gradient(circle_at_center,_rgba(79,173,255,0.08)_0%,_transparent_60%)]"
+        animate={prefersReducedMotion ? { opacity: 0.8 } : { opacity: [0.6, 1, 0.6] }}
+        transition={{ duration: prefersReducedMotion ? 0.01 : 8, repeat: Infinity, ease: 'easeInOut' }}
       />
-
-      {/* Main Cinematic Studio Stage */}
-      <main id="stage-content" className="pt-14 pb-16 md:pb-0 flex-1 flex flex-col justify-center">
-        <div className="sr-only" role="status" aria-live="polite">
-          Chapter {chapter.number}: {chapter.title}
-        </div>
-
-        <AvatarStage
-          chapter={chapter}
-          isMoving={isMoving}
-          reducedMotion={prefersReducedMotion}
-          onNextChapter={goNext}
-          onPrevChapter={goPrev}
-          isFirst={currentChapter === 0}
-          isLast={currentChapter === chapters.length - 1}
-        />
-      </main>
-
-      {/* Desktop Vertical Progress Dots */}
-      <ChapterNav
-        chapters={chapters}
-        currentIndex={currentChapter}
-        onSelect={goToChapter}
-      />
-
-      {/* Mobile Bottom Chapter Navigation */}
-      <MobileChapterNav
-        chapters={chapters}
-        currentIndex={currentChapter}
-        onPrev={goPrev}
-        onNext={goNext}
-      />
-
-      {/* Direct Access Overlay Modal (Projects, About, Resume, Contact) */}
-      {activeModal && (
-        <div
-          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4"
-          role="dialog"
-          aria-modal="true"
-          onClick={() => setActiveModal(null)}
+      <div className="relative isolate min-h-screen w-full overflow-x-hidden bg-[#F5F5F5] text-black transition-colors duration-300 dark:bg-[#151515] dark:text-white">
+        <NetworkBackground isDarkMode={isDarkMode} />
+        <a
+          href="#stage-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-16 focus:z-50 focus:rounded focus:border focus:border-[#111111]/10 focus:bg-[#111111]/5 focus:px-4 focus:py-2 focus:text-xs focus:font-mono focus:text-[#111111] dark:focus:border-white/10 dark:focus:bg-white/5 dark:focus:text-white"
         >
-          <div
-            className="w-full max-w-2xl bg-graphite-900 border border-graphite-700 rounded-xl p-6 shadow-2xl relative max-h-[85vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between border-b border-subtle pb-4 mb-5">
-              <h3 className="text-lg font-mono font-semibold text-white uppercase tracking-wider flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-cyan-400" />
-                {activeModal}
-              </h3>
-              <button
-                onClick={() => setActiveModal(null)}
-                className="p-1 rounded text-gray-400 hover:text-white hover:bg-graphite-800 transition-colors"
-                aria-label="Close dialog"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
+          Skip to main content
+        </a>
 
-            {/* Direct Projects Access */}
-            {activeModal === 'projects' && (
-              <div className="space-y-4">
-                <p className="text-xs font-mono text-gray-400 mb-2">
-                  Engineered systems across Computer Vision, IoT, and Edge AI:
-                </p>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  {projects.map((proj) => (
-                    <div
-                      key={proj.id}
-                      className="p-4 rounded-lg bg-graphite-800/80 border border-subtle hover:border-cyan-500/40 transition-colors group"
-                    >
-                      <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-sm font-semibold text-white group-hover:text-cyan-300 transition-colors">
-                          {proj.title}
-                        </span>
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-graphite-700 text-cyan-400">
-                          {proj.status}
-                        </span>
-                      </div>
-                      <p className="text-xs text-gray-400 mb-3">{proj.tagline}</p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {proj.tags.map((t) => (
-                          <span
-                            key={t}
-                            className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-graphite-900 text-gray-400"
-                          >
-                            {t}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+        <NavBar
+          isMuted={isMuted}
+          isDarkMode={isDarkMode}
+          onToggleMute={toggleMute}
+          onToggleTheme={toggleTheme}
+          reducedMotion={prefersReducedMotion}
+          onToggleMotion={toggleMotion}
+          activeSection={activeSection}
+          onNavigate={handleNavigate}
+        />
 
-            {/* About Modal */}
-            {activeModal === 'about' && (
-              <div className="space-y-4 text-sm text-gray-300 leading-relaxed">
-                <p className="font-medium text-white text-base">
-                  {personalInfo.name}
-                </p>
-                <p className="text-cyan-300 font-mono text-xs">
-                  {personalInfo.tagline}
-                </p>
-                <p>
-                  Specializing in the fusion of electronics hardware, embedded firmware, and real-time computer vision algorithms.
-                </p>
-                <div className="grid grid-cols-2 gap-3 pt-2 text-xs font-mono">
-                  <div className="p-3 rounded bg-graphite-800 border border-subtle">
-                    <span className="text-gray-500 block">DISCIPLINE</span>
-                    <span className="text-white">Electronics & Telecomm.</span>
-                  </div>
-                  <div className="p-3 rounded bg-graphite-800 border border-subtle">
-                    <span className="text-gray-500 block">FOCUS</span>
-                    <span className="text-white">Embedded Systems & Edge AI</span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Resume Modal */}
-            {activeModal === 'resume' && (
-              <div className="space-y-4 text-sm text-gray-300">
-                <p className="text-gray-400">
-                  Engineering documentation, technical qualifications, and coursework summary.
-                </p>
-                <div className="p-4 rounded-lg bg-graphite-800/60 border border-dashed border-graphite-600 flex items-center justify-between">
-                  <div>
-                    <span className="text-white font-medium block">Shivam_Raut_Resume.pdf</span>
-                    <span className="text-xs font-mono text-gray-500">[PDF document placeholder]</span>
-                  </div>
-                  <button className="px-3 py-1.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-xs font-mono hover:bg-cyan-500/30 transition-colors">
-                    Download
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Contact Modal */}
-            {activeModal === 'contact' && (
-              <div className="space-y-4 text-sm">
-                <p className="text-gray-300">
-                  Direct channels for engineering collaboration, project inquiries, or research discussions:
-                </p>
-                <div className="space-y-2 font-mono text-xs">
-                  <div className="p-3 rounded bg-graphite-800 border border-subtle flex items-center justify-between">
-                    <span className="text-gray-400">IDENTITY</span>
-                    <span className="text-cyan-300">Silicon Jack / Shivam Raut</span>
-                  </div>
-                  <div className="p-3 rounded bg-graphite-800 border border-subtle flex items-center justify-between">
-                    <span className="text-gray-400">EMAIL</span>
-                    <span className="text-white">[contact@shivamraut.dev placeholder]</span>
-                  </div>
-                  <div className="p-3 rounded bg-graphite-800 border border-subtle flex items-center justify-between">
-                    <span className="text-gray-400">GITHUB</span>
-                    <span className="text-white">[github.com/shivamraut placeholder]</span>
-                  </div>
-                </div>
-              </div>
-            )}
+        <main id="stage-content" className="flex flex-1 flex-col items-start pb-16 pt-14 md:pb-0">
+          <div className="sr-only" role="status" aria-live="polite">
+            Chapter {chapter.number}: {chapter.title}
           </div>
-        </div>
-      )}
-    </div>
+
+          <AvatarStage
+            chapter={chapter}
+            isMoving={isMoving}
+            reducedMotion={prefersReducedMotion}
+            onNextChapter={goNext}
+            onPrevChapter={goPrev}
+            isFirst={currentChapter === 0}
+            isLast={currentChapter === chapters.length - 1}
+            onSelectProject={setActiveProject}
+            onSelectChapter={goToChapter}
+          />
+        </main>
+
+        <MobileChapterNav
+          chapters={chapters}
+          currentIndex={currentChapter}
+          onPrev={goPrev}
+          onNext={goNext}
+        />
+
+        {activeModal && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-md"
+            role="dialog"
+            aria-modal="true"
+            onClick={() => setActiveModal(null)}
+          >
+            <div
+              className="relative max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-xl border border-[#111111]/10 bg-[#F5F5F5] p-6 shadow-2xl dark:border-white/10 dark:bg-[#111111]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="mb-5 flex items-center justify-between border-b border-[#111111]/10 pb-4 dark:border-white/10">
+                <h3 className="flex items-center gap-2 text-lg font-mono font-semibold uppercase tracking-[0.2em] text-[#111111] dark:text-white">
+                  <span className="h-2 w-2 rounded-full bg-[#111111]/70 dark:bg-white/70" />
+                  {activeModal}
+                </h3>
+                <button
+                  onClick={() => setActiveModal(null)}
+                  className="rounded p-1 text-[#444444] transition-colors hover:bg-[#111111]/5 hover:text-[#111111] dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white"
+                  aria-label="Close dialog"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              {activeModal === 'projects' && (
+                <div className="space-y-4">
+                  <p className="mb-2 text-xs font-mono uppercase tracking-[0.18em] text-[#444444] dark:text-gray-500">
+                    Engineered systems across Computer Vision, IoT, and Edge AI:
+                  </p>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {projects.map((proj) => (
+                      <div
+                        key={proj.id}
+                        className="rounded-lg border border-[#111111]/10 bg-[#111111]/[0.02] p-4 transition-colors hover:bg-[#111111]/[0.04] dark:border-white/10 dark:bg-white/[0.02] dark:hover:bg-white/[0.04]"
+                      >
+                        <div className="mb-1.5 flex items-center justify-between">
+                          <span className="text-sm font-semibold text-[#111111] dark:text-white">{proj.title}</span>
+                          <span className="rounded bg-[#111111]/5 px-2 py-0.5 text-[10px] font-mono uppercase tracking-[0.16em] text-[#444444] dark:bg-white/5 dark:text-gray-400">
+                            {proj.status}
+                          </span>
+                        </div>
+                        <p className="mb-3 text-xs text-[#444444] dark:text-gray-400">{proj.tagline}</p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {proj.tags.map((t) => (
+                            <span
+                              key={t}
+                              className="rounded bg-[#111111]/5 px-1.5 py-0.5 text-[10px] font-mono uppercase tracking-[0.12em] text-[#444444] dark:bg-[#0d0d0d] dark:text-gray-500"
+                            >
+                              {t}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {activeModal === 'about' && (
+                <div className="space-y-4 text-sm leading-relaxed text-[#333333] dark:text-gray-300">
+                  <p className="text-base font-medium text-[#111111] dark:text-white">{personalInfo.name}</p>
+                  <p className="text-xs font-mono uppercase tracking-[0.18em] text-[#444444] dark:text-gray-500">
+                    {personalInfo.tagline}
+                  </p>
+                  <p>
+                    Specializing in the fusion of electronics hardware, embedded firmware, and real-time computer vision algorithms.
+                  </p>
+                  <div className="grid grid-cols-2 gap-3 pt-2 text-xs font-mono">
+                    <div className="rounded border border-[#111111]/10 bg-[#111111]/[0.02] p-3 dark:border-white/10 dark:bg-white/[0.02]">
+                      <span className="block text-[#444444] dark:text-gray-500">DISCIPLINE</span>
+                      <span className="text-[#111111] dark:text-white">Electronics & Telecomm.</span>
+                    </div>
+                    <div className="rounded border border-[#111111]/10 bg-[#111111]/[0.02] p-3 dark:border-white/10 dark:bg-white/[0.02]">
+                      <span className="block text-[#444444] dark:text-gray-500">FOCUS</span>
+                      <span className="text-[#111111] dark:text-white">Embedded Systems & Edge AI</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeModal === 'resume' && (
+                <div className="space-y-4 text-sm text-[#333333] dark:text-gray-300">
+                  <p className="text-[#444444] dark:text-gray-400">
+                    Engineering documentation, technical qualifications, and coursework summary.
+                  </p>
+                  <div className="flex items-center justify-between rounded-lg border border-dashed border-[#111111]/10 bg-[#111111]/[0.02] p-4 dark:border-white/10 dark:bg-white/[0.02]">
+                    <div>
+                      <span className="block font-medium text-[#111111] dark:text-white">Shivam_Raut_Resume.pdf</span>
+                      <span className="text-xs font-mono text-[#444444] dark:text-gray-500">[PDF document placeholder]</span>
+                    </div>
+                    <button className="rounded border border-[#111111]/10 bg-[#111111]/5 px-3 py-1.5 text-xs font-mono uppercase tracking-[0.18em] text-[#111111] transition-colors hover:bg-[#111111]/10 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10">
+                      Download
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {activeModal === 'contact' && (
+                <div className="space-y-4 text-sm">
+                  <p className="text-[#333333] dark:text-gray-300">
+                    Direct channels for engineering collaboration, project inquiries, or research discussions:
+                  </p>
+                  <div className="space-y-2 font-mono text-xs">
+                    <div className="flex items-center justify-between rounded border border-[#111111]/10 bg-[#111111]/[0.02] p-3 dark:border-white/10 dark:bg-white/[0.02]">
+                      <span className="text-[#444444] dark:text-gray-400">IDENTITY</span>
+                      <span className="text-[#111111] dark:text-white">Silicon Jack / Shivam Raut</span>
+                    </div>
+                    <div className="flex items-center justify-between rounded border border-[#111111]/10 bg-[#111111]/[0.02] p-3 dark:border-white/10 dark:bg-white/[0.02]">
+                      <span className="text-[#444444] dark:text-gray-400">EMAIL</span>
+                      <a href="https://www.linkedin.com/in/shivam-raut-26539b341/" target="_blank" rel="noopener noreferrer" className="text-[#111111] hover:underline dark:text-white">LinkedIn profile</a>
+                    </div>
+                    <div className="flex items-center justify-between rounded border border-[#111111]/10 bg-[#111111]/[0.02] p-3 dark:border-white/10 dark:bg-white/[0.02]">
+                      <span className="text-[#444444] dark:text-gray-400">GITHUB</span>
+                      <a href="https://github.com/shivamraut07" target="_blank" rel="noopener noreferrer" className="text-[#111111] hover:underline dark:text-white">github.com/shivamraut07</a>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+      <ProjectModal isOpen={!!activeProject} onClose={() => setActiveProject(null)} project={activeProject} />
+      </div>
+    </>
   );
 }

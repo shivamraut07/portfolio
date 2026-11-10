@@ -6,14 +6,10 @@ interface ChapterNavProps {
   onSelect: (index: number) => void;
 }
 
-/**
- * Vertical chapter progress indicator.
- * Shows dots for each chapter with the current chapter highlighted.
- */
 export function ChapterNav({ chapters, currentIndex, onSelect }: ChapterNavProps) {
   return (
     <nav
-      className="fixed right-4 sm:right-6 top-1/2 -translate-y-1/2 z-40 hidden md:flex flex-col items-center gap-3"
+      className="fixed right-4 top-1/2 z-40 hidden max-h-screen -translate-y-1/2 flex-col items-center gap-3 overflow-y-auto pb-12 md:flex no-scrollbar"
       aria-label="Chapter navigation"
       role="tablist"
     >
@@ -30,23 +26,18 @@ export function ChapterNav({ chapters, currentIndex, onSelect }: ChapterNavProps
             onClick={() => onSelect(index)}
             className="group relative flex items-center"
           >
-            {/* Dot */}
             <div
-              className={`w-2.5 h-2.5 rounded-full border transition-all duration-300 ${
+              className={`h-2.5 w-2.5 rounded-full border transition-all duration-300 ${
                 isActive
-                  ? 'bg-cyan-400 border-cyan-400 scale-125'
+                  ? 'scale-125 border-[#111111] bg-[#111111] dark:border-white dark:bg-white'
                   : isPast
-                  ? 'bg-graphite-600 border-gray-600'
-                  : 'bg-transparent border-gray-700 group-hover:border-gray-500'
+                    ? 'border-[#111111]/50 bg-[#111111]/60 dark:border-gray-600 dark:bg-gray-600'
+                    : 'border-[#111111]/30 bg-transparent group-hover:border-[#111111]/60 dark:border-white/20 dark:group-hover:border-white/40'
               }`}
             />
 
-            {/* Label tooltip */}
-            <span
-              className="absolute right-6 whitespace-nowrap text-xs font-mono text-gray-500 
-                         opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
-            >
-              {chapter.number} — {chapter.subtitle}
+            <span className="pointer-events-none absolute right-6 whitespace-nowrap text-xs font-mono text-[#444444] opacity-0 transition-opacity group-hover:opacity-100 dark:text-gray-500">
+              {chapter.number} - {chapter.subtitle}
             </span>
           </button>
         );

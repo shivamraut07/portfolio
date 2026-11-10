@@ -8,7 +8,8 @@ export interface Chapter {
   content: string[];
   avatarPosition: 'left' | 'right';
   accentColor: 'electric' | 'cyan';
-  narrationSrc?: string; // placeholder path for audio
+  avatarImage: string;
+  narrationSrc?: string;
 }
 
 export const chapters: Chapter[] = [
@@ -24,6 +25,7 @@ export const chapters: Chapter[] = [
     ],
     avatarPosition: 'right',
     accentColor: 'electric',
+    avatarImage: '/ref_avatar_sj/SJ00.png',
     narrationSrc: '/audio/ch00-opening.mp3',
   },
   {
@@ -32,40 +34,37 @@ export const chapters: Chapter[] = [
     title: 'The Foundation',
     subtitle: 'Electronics & Telecommunication Engineering',
     content: [
-      "Electronics and Telecommunication Engineering — the foundation that started everything. Circuit design, signal processing, embedded programming, and understanding how hardware communicates.",
-      "This is where I learned to think in systems: how components connect, how signals flow, and how constraints drive engineering decisions.",
-      "[Education details, coursework highlights, and foundational projects to be added]",
+      "Before writing a single line of C++ or training an AI model, I started at the silicon level. I believe that true innovation requires understanding the raw physical constraints of the hardware.",
     ],
     avatarPosition: 'left',
     accentColor: 'cyan',
+    avatarImage: '/ref_avatar_sj/SJ01.png',
     narrationSrc: '/audio/ch01-foundation.mp3',
   },
   {
     id: 'connecting-systems',
     number: '02',
-    title: 'Connecting Systems',
+    title: 'Embedded Systems & IoT',
     subtitle: 'Embedded Systems & IoT',
     content: [
-      "From standalone circuits to connected devices. ESP32 microcontrollers, sensor integration, MQTT protocols, and building systems that bridge hardware and software.",
-      "Projects like the AI Smart Home system and illegal vehicle detection brought together embedded programming with real-world problem solving.",
-      "[Project photos, architecture diagrams, and implementation details to be added]",
+      "Bridging physical hardware with digital intelligence. My progression from raw circuit design and custom PCBs to connected IoT microcontrollers handling concurrent sensor logic and API inference.",
     ],
     avatarPosition: 'right',
     accentColor: 'electric',
+    avatarImage: '/ref_avatar_sj/SJ02.png',
     narrationSrc: '/audio/ch02-connecting.mp3',
   },
   {
     id: 'teaching-machines',
     number: '03',
-    title: 'Teaching Machines to Understand',
-    subtitle: 'Computer Vision & AI',
+    title: 'Computer Vision & Machine Learning',
+    subtitle: 'Computer Vision & Machine Learning',
     content: [
-      "Computer vision transforms raw pixels into actionable understanding. Object detection with YOLOv11, multi-object tracking with ByteTrack, and event detection in real-world scenarios.",
-      "CivicEye — a traffic monitoring system that detects and tracks vehicles, identifies violations, and provides verified analytics. Engineering contribution focused on detection accuracy and tracking reliability.",
-      "[Verified metrics, system architecture, and demo screenshots to be added]",
+      "Training systems to understand the physical world. My focus lies in curating raw environmental data, annotating custom datasets, and evaluating YOLO vision pipelines for spatial object detection.",
     ],
     avatarPosition: 'left',
     accentColor: 'cyan',
+    avatarImage: '/ref_avatar_sj/SJ03.png',
     narrationSrc: '/audio/ch03-vision.mp3',
   },
   {
@@ -74,26 +73,24 @@ export const chapters: Chapter[] = [
     title: 'Intelligence at the Edge',
     subtitle: 'Edge AI & TinyML',
     content: [
-      "Running AI models on microcontrollers and edge devices. Model optimisation, quantisation experiments, and exploring deployment on resource-constrained hardware.",
-      "Edge Impulse workflows, TensorFlow Lite conversions, and understanding the trade-offs between model accuracy and inference speed on embedded platforms.",
-      "[Deployment experiments, optimisation results, and current status to be added. Ongoing work clearly distinguished from completed deployment.]",
+      "Transitioning from traditional embedded systems to on-device machine learning. My current focus is mastering model quantization, memory constraints, and TinyML deployment workflows on resource-constrained microcontrollers.",
     ],
     avatarPosition: 'right',
     accentColor: 'electric',
+    avatarImage: '/ref_avatar_sj/SJ04.png',
     narrationSrc: '/audio/ch04-edge.mp3',
   },
   {
-    id: 'beyond-screen',
+    id: 'beyond-the-box',
     number: '05',
-    title: 'Beyond the Screen',
-    subtitle: 'Autonomous Systems & Robotics',
+    title: 'Beyond The Box',
+    subtitle: 'Systems Thinking & Research',
     content: [
-      "Exploring autonomous systems, drone technology, and robotics. Interests that extend engineering from the digital world into physical autonomous platforms.",
-      "Relevant experience with e-Yantra robotics competition, NIDAR project work, and exploring the fundamentals of autonomous navigation.",
-      "[Genuine project work and verified experience to be added. No unverified achievements or affiliations.]",
+      "Connecting standalone scripts into autonomous workflows. Utilizing node-based architectures, LLM APIs, and webhooks to build intelligent systems that run themselves.",
     ],
     avatarPosition: 'left',
     accentColor: 'cyan',
+    avatarImage: '/ref_avatar_sj/SJ05.png',
     narrationSrc: '/audio/ch05-beyond.mp3',
   },
   {
@@ -102,12 +99,13 @@ export const chapters: Chapter[] = [
     title: 'How I Build',
     subtitle: 'Engineering Workflow',
     content: [
-      "Research → Learn → Prototype → Integrate → Debug → Test → Document → Improve.",
+      "Research ? Learn ? Prototype ? Integrate ? Debug ? Test ? Document ? Improve.",
       "Every project follows a deliberate engineering process. AI tools support learning and accelerate exploration, but they don't replace the understanding that comes from building, breaking, and fixing things yourself.",
       "Good engineering is about making informed decisions, understanding trade-offs, and knowing when a solution is genuinely working versus just appearing to work.",
     ],
     avatarPosition: 'right',
     accentColor: 'electric',
+    avatarImage: '/ref_avatar_sj/SJ06.png',
     narrationSrc: '/audio/ch06-workflow.mp3',
   },
   {
@@ -121,6 +119,7 @@ export const chapters: Chapter[] = [
     ],
     avatarPosition: 'left',
     accentColor: 'cyan',
+    avatarImage: '/ref_avatar_sj/SJ07.png',
     narrationSrc: '/audio/ch07-closing.mp3',
   },
 ];
@@ -135,7 +134,7 @@ export const navItems: NavItem[] = [
   { id: 'journey', label: 'Journey', href: '#journey' },
   { id: 'projects', label: 'Projects', href: '#projects' },
   { id: 'about', label: 'About', href: '#about' },
-  { id: 'resume', label: 'Resume', href: '#resume' },
+  { id: 'resume', label: 'Resume', href: '/ResumeSRip_v3.pdf' },
   { id: 'contact', label: 'Contact', href: '#contact' },
 ];
 
@@ -145,7 +144,7 @@ export interface ProjectSummary {
   tagline: string;
   tags: string[];
   status: 'completed' | 'in-progress' | 'exploration';
-  thumbnail?: string; // placeholder
+  thumbnail?: string;
 }
 
 export const projects: ProjectSummary[] = [
@@ -180,7 +179,7 @@ export const projects: ProjectSummary[] = [
   {
     id: 'nidar',
     title: 'NIDAR',
-    tagline: '[Project description placeholder — details to be verified]',
+    tagline: '[Project description placeholder � details to be verified]',
     tags: ['Robotics', 'Autonomous Systems'],
     status: 'exploration',
   },
@@ -190,7 +189,7 @@ export const personalInfo = {
   name: 'Shivam Atul Raut',
   tagline: 'Building at the intersection of Electronics, Embedded Systems and Artificial Intelligence.',
   email: '[email placeholder]',
-  github: '[GitHub URL placeholder]',
-  linkedin: '[LinkedIn URL placeholder]',
-  resume: '[Resume URL placeholder]',
+  github: 'https://github.com/shivamraut07',
+  linkedin: 'https://www.linkedin.com/in/shivam-raut-26539b341/',
+  resume: '/ResumeSRip_v3.pdf',
 };
