@@ -43,7 +43,7 @@ export function Avatar({ imageSrc, reducedMotion, direction = 'left' }: AvatarPr
             transition={{ duration: reducedMotion ? 0.01 : 1.2, ease: 'easeOut' }}
             // FINAL FIX: h-[45vh] w-auto forces the height to be exactly 45% of the screen on mobile.
             // Width will automatically shrink to fit, guaranteeing no clipping.
-            className="relative z-10 h-[45vh] md:h-[65vh] max-h-[500px] md:max-h-[700px] w-auto object-contain object-bottom grayscale contrast-[1.06]"
+            className="relative z-10 h-[40vh] md:h-[65vh] max-h-[450px] md:max-h-[700px] w-auto object-contain object-bottom grayscale contrast-[1.06]"
             style={{ filter: 'drop-shadow(0 25px 30px rgba(0, 0, 0, 0.8))' }}
           />
         </AnimatePresence>
