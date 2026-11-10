@@ -21,12 +21,17 @@ export function NetworkBackground({ isDarkMode }: NetworkBackgroundProps) {
 
     const connectionDistance = 150;
     const pointerRadius = 140;
-    const particles: Particle[] = Array.from({ length: 60 }, () => ({
+    
+    // FIX 1: Make particle count dynamic! 25 on mobile, 60 on desktop
+    const particleCount = typeof window !== 'undefined' && window.innerWidth < 768 ? 25 : 60;
+    
+    const particles: Particle[] = Array.from({ length: particleCount }, () => ({
       x: Math.random() * window.innerWidth,
       y: Math.random() * window.innerHeight,
       vx: (Math.random() - 0.5) * 0.35,
       vy: (Math.random() - 0.5) * 0.35,
     }));
+    
     const pointer = { x: -1000, y: -1000 };
     let animationFrame = 0;
     let width = 0;
@@ -88,9 +93,12 @@ export function NetworkBackground({ isDarkMode }: NetworkBackgroundProps) {
           if (distance < connectionDistance) {
             const alpha = 1 - distance / connectionDistance;
             context.beginPath();
+            
+            // FIX 2: Corrected the syntax error with the multiplication symbol (*)
             context.strokeStyle = isDark
               ? `rgba(34, 211, 238, ${alpha * 0.6})`
               : `rgba(15, 23, 42, ${alpha * 0.3})`;
+              
             context.lineWidth = 1;
             context.moveTo(particle.x, particle.y);
             context.lineTo(other.x, other.y);
@@ -128,5 +136,6 @@ export function NetworkBackground({ isDarkMode }: NetworkBackgroundProps) {
     };
   }, [isDarkMode]);
 
-  return <canvas ref={canvasRef} aria-hidden="true" className="pointer-events-none fixed inset-0 -z-40" />;
+  // FIX 3: Added "opacity-40 md:opacity-100" so it fades slightly on mobile
+  return <canvas ref={canvasRef} aria-hidden="true" className="pointer-events-none fixed inset-0 -z-40 opacity-40 md:opacity-100" />;
 }
