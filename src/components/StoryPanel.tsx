@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, ArrowLeft, ExternalLink, Terminal } from 'lucide-react';
 import type { Chapter } from '@/data/chapters';
 import type { ProjectModalData } from './ProjectModal';
+import LazyVideo from './LazyVideo';
 
 const hardwareProjects: Record<string, ProjectModalData> = {
   fpga: { title: '10M02 MAX10 FPGA Development Board', tech: ['KiCad', 'PSpice', 'PCB Design', 'Power Simulation'], situation: 'Tasked with designing a complete multi-layer FPGA development board for a Zoho hardware assessment, which required strict power supply validation and precise signal routing constraints.', action: 'Architected the complete schematic and PCB layout from scratch in KiCad. Ran rigorous PSpice simulations to validate the power delivery network and ensure stable voltage levels before routing the final copper traces.', result: 'Successfully delivered a production-ready, multi-layer hardware layout, demonstrating professional proficiency in EDA tools, PCB design principles, and electrical simulation.' },
@@ -102,19 +103,23 @@ export function StoryPanel({
                   ].map((project) => (
                     <div
                       key={project.title}
-                      className="mt-8 cursor-pointer overflow-hidden rounded-xl border border-black/10 bg-white shadow-sm backdrop-blur-sm transition-all hover:border-cyan-500/50 dark:border-white/10 dark:bg-slate-900/50" onClick={() => onSelectProject?.(project.title === '10M02 MAX10 FPGA Development Board' ? hardwareProjects.fpga : project.title === 'AI Smart Home Automation' ? hardwareProjects.smartHome : hardwareProjects.illegalParking)}
+                      className="mt-8 cursor-pointer overflow-hidden rounded-xl border border-black/10 bg-white shadow-sm backdrop-blur-sm transition-all hover:border-cyan-500/50 dark:border-white/10 dark:bg-slate-900/50"
+                      onClick={() =>
+                        onSelectProject?.(
+                          project.title === '10M02 MAX10 FPGA Development Board'
+                            ? hardwareProjects.fpga
+                            : project.title === 'AI Smart Home Automation'
+                            ? hardwareProjects.smartHome
+                            : hardwareProjects.illegalParking
+                        )
+                      }
                     >
-                      <div className="relative aspect-video w-full bg-black">
-                        <video
-                          src={project.src}
-                          autoPlay
-                          loop
-                          muted
-                          playsInline
-                          className="absolute inset-0 h-full w-full object-cover opacity-90"
-                        />
-                        <div className="pointer-events-none absolute inset-0 shadow-[inset_0_0_20px_rgba(0,0,0,0.5)]" />
-                      </div>
+                      <LazyVideo
+                        videoSrc={project.src}
+                        thumbnailSrc={project.src.replace('.mp4', '.jpg')}
+                        altText={project.title}
+                        className="aspect-video w-full"
+                      />
                       <div className="p-6">
                         <div className="mb-2 flex items-start justify-between gap-3">
                           <h3 className="text-lg font-bold text-gray-900 dark:text-white">{project.title}</h3>
@@ -149,22 +154,23 @@ export function StoryPanel({
                     <div
                       key={project.title}
                       className="overflow-hidden rounded-xl border border-black/10 bg-white shadow-sm backdrop-blur-sm transition-all hover:border-cyan-500/50 dark:border-white/10 dark:bg-slate-900/50"
-                    >
+                  >
+                    {project.media === 'video' ? (
+                      <LazyVideo
+                        videoSrc={project.src}
+                        thumbnailSrc={project.src.replace('.mp4', '.jpg')}
+                        altText={project.title}
+                        className="aspect-video w-full"
+                      />
+                    ) : (
                       <div className="relative flex aspect-video w-full items-center justify-center bg-black">
-                        {project.media === 'video' ? (
-                          <video
-                            src={project.src}
-                            autoPlay
-                            loop
-                            muted
-                            playsInline
-                            className="absolute inset-0 h-full w-full object-cover opacity-90"
-                          />
-                        ) : (
-                          <img src={project.src} alt={project.title} className="absolute inset-0 h-full w-full object-cover opacity-90" />
-                        )}
-                        <div className="pointer-events-none absolute inset-0 shadow-[inset_0_0_20px_rgba(0,0,0,0.5)]" />
+                        <img
+                          src={project.src}
+                          alt={project.title}
+                          className="absolute inset-0 h-full w-full object-cover opacity-90"
+                        />
                       </div>
+                    )}
                       <div className="p-6">
                         <div className="mb-2 flex items-start justify-between gap-3">
                           <h3 className="text-lg font-bold text-gray-900 dark:text-white">{project.title}</h3>
@@ -209,22 +215,33 @@ export function StoryPanel({
                 </div>
               )}
               {chapter.id === 'foundation' && index === 0 && (
-                <>
-                  <div className="cursor-pointer overflow-hidden rounded-xl border border-black/10 bg-white shadow-sm backdrop-blur-sm transition-all hover:border-cyan-500/50 dark:border-white/10 dark:bg-slate-900/50" onClick={() => onSelectProject?.(hardwareProjects.foundations)}>
-                    <div className="relative flex aspect-video w-full items-center justify-center bg-black">
-                      <video src="/video/foundations.mp4" autoPlay loop muted playsInline className="absolute inset-0 h-full w-full object-cover opacity-90" />
-                      <div className="pointer-events-none absolute inset-0 shadow-[inset_0_0_20px_rgba(0,0,0,0.5)]" />
-                    </div>
-                    <div className="p-6">
-                      <div className="mb-2 flex items-start justify-between gap-3">
-                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">Bare-Metal Electronics</h3>
-                        <span className="rounded bg-cyan-500/20 px-2 py-1 text-xs font-mono text-cyan-600 dark:text-cyan-400">Read Case Study →</span>
+                  <>
+                    <div
+                      className="cursor-pointer overflow-hidden rounded-xl border border-black/10 bg-white shadow-sm backdrop-blur-sm transition-all hover:border-cyan-500/50 dark:border-white/10 dark:bg-slate-900/50"
+                      onClick={() => onSelectProject?.(hardwareProjects.foundations)}
+                    >
+                      <LazyVideo
+                        videoSrc="/video/foundations.mp4"
+                        thumbnailSrc="/video/foundations.jpg"
+                        altText="Bare-Metal Electronics"
+                        className="aspect-video w-full"
+                      />
+                      <div className="p-6">
+                        <div className="mb-2 flex items-start justify-between gap-3">
+                          <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                            Bare-Metal Electronics
+                          </h3>
+                          <span className="rounded bg-cyan-500/20 px-2 py-1 text-xs font-mono text-cyan-600 dark:text-cyan-400">
+                            Read Case Study →
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-600 dark:text-gray-300">
+                          Mastering 555 timers, logic gates, and discrete components to build a foundation in raw hardware before transitioning to microcontrollers.
+                        </p>
                       </div>
-                      <p className="text-sm text-gray-600 dark:text-gray-300">Mastering 555 timers, logic gates, and discrete components to build a foundation in raw hardware before transitioning to microcontrollers.</p>
                     </div>
-                  </div>
                   </>
-              )}
+                )}
               </div>
             );
           })}
@@ -304,16 +321,24 @@ export function StoryPanel({
                 onClick={() => onSelectProject?.(hardwareProjects.vihangRadar)}
                 className="cursor-pointer overflow-hidden rounded-xl border border-black/10 bg-white shadow-sm backdrop-blur-sm transition-all hover:border-cyan-500/50 dark:border-white/10 dark:bg-slate-900/50"
               >
-                <div className="relative flex aspect-video w-full items-center justify-center bg-black">
-                  <video src="/video/n8n.mp4" autoPlay loop muted playsInline className="absolute inset-0 h-full w-full object-cover opacity-90" />
-                  <div className="pointer-events-none absolute inset-0 shadow-[inset_0_0_20px_rgba(0,0,0,0.5)]" />
-                </div>
+                <LazyVideo
+                  videoSrc="/video/n8n.mp4"
+                  thumbnailSrc="/video/n8n.jpg"
+                  altText="Vihang Radar (Experiment)"
+                  className="aspect-video w-full"
+                />
                 <div className="p-6">
                   <div className="mb-2 flex items-start justify-between gap-3">
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">Vihang Radar (Experiment)</h3>
-                    <span className="rounded bg-cyan-500/20 px-2 py-1 text-xs font-mono text-cyan-600 dark:text-cyan-400">Read Case Study →</span>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                      Vihang Radar (Experiment)
+                    </h3>
+                    <span className="rounded bg-cyan-500/20 px-2 py-1 text-xs font-mono text-cyan-600 dark:text-cyan-400">
+                      Read Case Study →
+                    </span>
                   </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">Automated event intelligence workflow connecting Serper.dev web search, Gemini API data extraction, and Google Sheets via n8n HTTP Request nodes.</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
+                    Automated event intelligence workflow connecting Serper.dev web search, Gemini API data extraction, and Google Sheets via n8n HTTP Request nodes.
+                  </p>
                 </div>
               </div>
 

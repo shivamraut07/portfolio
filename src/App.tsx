@@ -22,7 +22,29 @@ export default function App() {
 
   const { prefersReducedMotion, toggleMotion } = useReducedMotion();
   const { isMuted, toggleMute, playChapterAudio } = useAudio();
+  useEffect(() => {
+    const preventContextMenu = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'IMG' || target.tagName === 'VIDEO') {
+        e.preventDefault();
+      }
+    };
 
+    const preventDrag = (e: DragEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'IMG' || target.tagName === 'VIDEO') {
+        e.preventDefault();
+      }
+    };
+
+    document.addEventListener('contextmenu', preventContextMenu);
+    document.addEventListener('dragstart', preventDrag);
+
+    return () => {
+      document.removeEventListener('contextmenu', preventContextMenu);
+      document.removeEventListener('dragstart', preventDrag);
+    };
+  }, []);
   const chapter = chapters[currentChapter];
 
   const goToChapter = useCallback(
@@ -42,7 +64,7 @@ export default function App() {
 
         const targetChapter = chapters[index];
         if (!isMuted && targetChapter.narrationSrc) {
-          playChapterAudio(targetChapter.narrationSrc);
+          //playChapterAudio(targetChapter.narrationSrc);
         }
       }, delay);
     },

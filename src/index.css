@@ -140,3 +140,8 @@ body {
   background-color: rgba(30, 30, 36, 0.6);
   backdrop-filter: blur(8px);
 }
+img, video {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
